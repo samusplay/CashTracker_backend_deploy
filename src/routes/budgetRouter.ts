@@ -4,5 +4,10 @@ const router=Router()
 
 router.get('/',BudgetController.getAll)
 router.post('/',BudgetController.create)
+//routing dinamico
+router.get('/:id',BudgetController.getById)
+router.put('/:id',BudgetController.updateById)
+router.delete('/:id',BudgetController.deleteById)
+
 
 export default router
