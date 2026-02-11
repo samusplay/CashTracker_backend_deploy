@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { param, validationResult } from "express-validator";
+import { body, param, validationResult } from "express-validator";
 import Budget from "../models/Budget";
 
 //agregamos propiedades al request
@@ -13,7 +13,7 @@ declare global{
 //validar parametros
 export const validateBudgetId = async (req: Request, res: Response, next: NextFunction) => {
 
-    await param("id")
+    await param("budgetId")
         .isInt()
         .withMessage("Id no valido")
         .custom((value) => value > 0)
@@ -28,11 +28,12 @@ export const validateBudgetId = async (req: Request, res: Response, next: NextFu
     next()
 }
 
+//middleware para validar si existe el budget
 export const validateBudgetExist = async (req: Request, res: Response, next: NextFunction) => {
     try {
-            const { id }=req.params
+            const { budgetId }=req.params
             //encontramos con sequialize
-            const budget=await Budget.findByPk(id as string)
+            const budget=await Budget.findByPk(budgetId as string)
             if(!budget){
                 const error=new Error('Presupuesto no encontrado')
                 return res.status(404).json({error:error.message})
@@ -45,4 +46,22 @@ export const validateBudgetExist = async (req: Request, res: Response, next: Nex
             res.status(500).json({ error: 'Hubo un error' })
         }
     
+}
+
+export const validateBudgetInput = async (req: Request, res: Response, next: NextFunction) => {
+    //Reglas de validacion
+     await body("name")
+            .notEmpty()
+            .withMessage("El nombre del presupuesto no puede ir vacio").run(req)
+        
+        await body("amount")
+            .notEmpty()
+            .withMessage("La cantidad del presupuesto no puede ir vacio")
+            .isNumeric()
+            .withMessage("Cantidad no valida")
+            .custom((value) => value > 0)
+            .withMessage("El presupuesto debe ser mayor a 0").run(req)
+    
+    //vaya al siguiente middleware
+    next()
 }

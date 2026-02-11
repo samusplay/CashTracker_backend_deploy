@@ -1,61 +1,36 @@
 import { Router } from "express";
-import { body } from "express-validator";
 import { BudgetController } from "../controllers/BudgetController";
-import { validateBudgetExist, validateBudgetId } from "../middleware/Budget";
+import { validateBudgetExist, validateBudgetId, validateBudgetInput } from "../middleware/Budget";
 import { handleInputErrors } from "../middleware/validation";
+
 const router = Router();
+//el parametro va llamar al middleware simpre que tenga el id
+router.param('budgetId',validateBudgetId)
+router.param('budgetId',validateBudgetExist)
 
 router.get("/", BudgetController.getAll);
 
 router.post(
     "/",
-    body("name")
-        .notEmpty()
-        .withMessage("El nombre del presupuesto no puede ir vacio"),
-    handleInputErrors,
-    body("amount")
-        .notEmpty()
-        .withMessage("La cantidad del presupuesto no puede ir vacia")
-        .isNumeric()
-        .withMessage("Cantidad no valida")
-        .custom((value) => value > 0)
-        .withMessage("El presupuesto debe ser mayor a 0"),
+    validateBudgetInput,
+    //maneja los errores generico
     handleInputErrors,
     BudgetController.create,
 );
 //routing dinamico
 router.get(
-    "/:id",
-    //validacion id
-    validateBudgetId,
-    //validacion que exista
-    validateBudgetExist,
+    "/:budgetId",
     BudgetController.getById
 );
 
 router.put(
-    "/:id",
-    //valida primero el middleware
-    validateBudgetId,
-    validateBudgetExist,
-    body("name")
-        .notEmpty()
-        .withMessage("El nombre del presupuesto no puede ir vacio"),
-    handleInputErrors,
-    body("amount")
-        .notEmpty()
-        .withMessage("La cantidad del presupuesto no puede ir vacia")
-        .isNumeric()
-        .withMessage("Cantidad no valida")
-        .custom((value) => value > 0)
-        .withMessage("El presupuesto debe ser mayor a 0"),
+    '/:budgetId',
+    validateBudgetInput,
     handleInputErrors,
     BudgetController.updateById,
 );
 
-router.delete("/:id",
-    validateBudgetId,
-    validateBudgetExist,
+router.delete('/:budgetId',
     BudgetController.deleteById);
 
 export default router;
