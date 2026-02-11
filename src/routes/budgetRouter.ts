@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { BudgetController } from "../controllers/BudgetController";
+import { ExpensesController } from "../controllers/ExpenseController";
 import { validateBudgetExist, validateBudgetId, validateBudgetInput } from "../middleware/Budget";
 import { handleInputErrors } from "../middleware/validation";
 
@@ -32,5 +33,13 @@ router.put(
 
 router.delete('/:budgetId',
     BudgetController.deleteById);
+
+/**ROUTES FOR EXPENSE using ROA */
+router.get('/budgetId/expenses',ExpensesController.getAll)
+router.post('/budgetId/expenses',ExpensesController.create)
+router.get('/budgetId/expenses/:expenseId',ExpensesController.getById)
+router.put('/budgetId/expenses/:expenseId',ExpensesController.updateById)
+router.delete('/budgetId/expenses/:expenseId',ExpensesController.deleteById)
+
 
 export default router;
