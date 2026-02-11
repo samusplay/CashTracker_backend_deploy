@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { body } from "express-validator";
 import { BudgetController } from "../controllers/BudgetController";
-import { validateBudgetId } from "../middleware/Budget";
+import { validateBudgetExist, validateBudgetId } from "../middleware/Budget";
 import { handleInputErrors } from "../middleware/validation";
 const router = Router();
 
@@ -26,7 +26,10 @@ router.post(
 //routing dinamico
 router.get(
     "/:id",
+    //validacion id
     validateBudgetId,
+    //validacion que exista
+    validateBudgetExist,
     BudgetController.getById
 );
 

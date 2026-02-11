@@ -36,20 +36,8 @@ export class BudgetController {
     }
 
     static getById = async (req: Request, res: Response) => {
-        try {
-            const { id }=req.params
-            //encontramos con sequialize
-            const budget=await Budget.findByPk(id as string)
-            if(!budget){
-                const error=new Error('Presupuesto no encontrado')
-                return res.status(404).json({error:error.message})
-            }
-            res.json(budget)
-
-        } catch (error) {
-            //console.log(error)
-            res.status(500).json({ error: 'Hubo un error' })
-        }
+        //con la configuracion global extendemos el request
+       res.json(req.budget)
     }
       static updateById = async (req: Request, res: Response) => {
         //encontrar el presupuesto
