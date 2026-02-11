@@ -37,6 +37,7 @@ router.put(
     "/:id",
     //valida primero el middleware
     validateBudgetId,
+    validateBudgetExist,
     body("name")
         .notEmpty()
         .withMessage("El nombre del presupuesto no puede ir vacio"),
@@ -54,6 +55,7 @@ router.put(
 
 router.delete("/:id",
     validateBudgetId,
+    validateBudgetExist,
     BudgetController.deleteById);
 
 export default router;
