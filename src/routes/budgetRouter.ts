@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { body } from 'express-validator'
+import { body, param } from 'express-validator'
 import { BudgetController } from '../controllers/BudgetController'
 import { handleInputErrors } from '../middleware/validation'
 const router = Router()
@@ -16,13 +16,18 @@ router.post('/',
         .withMessage('La cantidad del presupuesto no puede ir vacia')
         .isNumeric()
         .withMessage('Cantidad no valida')
-        .custom(value=> value>0)
+        .custom(value => value > 0)
         .withMessage('El presupuesto debe ser mayor a 0'),
     handleInputErrors,
     BudgetController.create
 )
 //routing dinamico
-router.get('/:id', BudgetController.getById)
+router.get('/:id',
+    param('id')
+        .isInt().withMessage('Id no valido')
+        .custom(value=>value>0).withMessage('Id no valido'),
+    handleInputErrors,
+    BudgetController.getById)
 
 router.put('/:id', BudgetController.updateById)
 
