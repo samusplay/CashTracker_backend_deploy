@@ -2,10 +2,11 @@ import { Router } from "express";
 import { BudgetController } from "../controllers/BudgetController";
 import { ExpensesController } from "../controllers/ExpenseController";
 import { validateBudgetExist, validateBudgetId, validateBudgetInput } from "../middleware/Budget";
+import { validateExpenseInput } from "../middleware/expense";
 import { handleInputErrors } from "../middleware/validation";
 
 const router = Router();
-//el parametro va llamar al middleware simpre que tenga el id
+//el parametro va llamar al middleware simpre que tenga el id para el expense y budget
 router.param('budgetId',validateBudgetId)
 router.param('budgetId',validateBudgetExist)
 
@@ -35,11 +36,15 @@ router.delete('/:budgetId',
     BudgetController.deleteById);
 
 /**ROUTES FOR EXPENSE using ROA */
-router.get('/budgetId/expenses',ExpensesController.getAll)
-router.post('/budgetId/expenses',ExpensesController.create)
-router.get('/budgetId/expenses/:expenseId',ExpensesController.getById)
-router.put('/budgetId/expenses/:expenseId',ExpensesController.updateById)
-router.delete('/budgetId/expenses/:expenseId',ExpensesController.deleteById)
+
+router.post('/:budgetId/expenses',
+    validateExpenseInput,
+    handleInputErrors,
+    ExpensesController.create
+)
+router.get('/:budgetId/expenses/:expenseId',ExpensesController.getById)
+router.put('/:budgetId/expenses/:expenseId',ExpensesController.updateById)
+router.delete('/:budgetId/expenses/:expenseId',ExpensesController.deleteById)
 
 
 export default router;
