@@ -1,4 +1,4 @@
-import type { Request, Response } from "express"
+import { type Request, type Response } from "express"
 import Budget from "../models/Budget"
 
 
@@ -71,6 +71,21 @@ export class BudgetController {
         }
     }
       static deleteById = async (req: Request, res: Response) => {
-        console.log('Desde DELETE /api/budgets/id')
+        try {
+            //leer desde la url
+            const { id }=req.params
+            //encontramos con sequialize
+            const budget=await Budget.findByPk(id as string)
+            if(!budget){
+                const error=new Error('Presupuesto no encontrado')
+                return res.status(404).json({error:error.message})
+            }
+            //retornar que eliminamos
+            await budget.destroy()
+            res.json('Presupuesto eliminado correctamente')
+        } catch (error) {
+            //console.log(error)
+            res.status(500).json({ error: 'Hubo un error' })
+        }
     }
 }
