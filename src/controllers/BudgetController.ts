@@ -52,7 +52,23 @@ export class BudgetController {
         }
     }
       static updateById = async (req: Request, res: Response) => {
-        console.log('Desde PUT /api/budgets/id')
+        //encontrar el presupuesto
+         try {
+            const { id }=req.params
+            //encontramos con sequialize
+            const budget=await Budget.findByPk(id as string)
+            if(!budget){
+                const error=new Error('Presupuesto no encontrado')
+                return res.status(404).json({error:error.message})
+            }
+            //escribir los campos del body
+             await budget.update(req.body)
+             res.json('Presupuesto actualizado correctamente')
+
+        } catch (error) {
+            //console.log(error)
+            res.status(500).json({ error: 'Hubo un error' })
+        }
     }
       static deleteById = async (req: Request, res: Response) => {
         console.log('Desde DELETE /api/budgets/id')
