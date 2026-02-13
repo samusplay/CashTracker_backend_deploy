@@ -11,7 +11,7 @@ class User extends Model{
     @Column({
         type:DataType.STRING(50)
     })
-    declare nombre:string
+    declare name:string
 
     @AllowNull(false)
     @Column({
