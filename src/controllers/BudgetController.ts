@@ -1,5 +1,6 @@
 import { type Request, type Response } from "express"
 import Budget from "../models/Budget"
+import Expense from "../models/Expense"
 
 
 //se maneja en clases el controlador
@@ -37,7 +38,14 @@ export class BudgetController {
 
     static getById = async (req: Request, res: Response) => {
         //con la configuracion global extendemos el request
-        res.json(req.budget)
+        //incluye la relacion
+        const budget=await Budget.findByPk(req.budget.id,{
+            include:[Expense]
+        })
+        //retornamos 
+
+        res.json(budget)
+        
     }
     static updateById = async (req: Request, res: Response) => {
         //ulizamos un middleware

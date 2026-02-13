@@ -65,3 +65,19 @@ export const validateBudgetInput = async (req: Request, res: Response, next: Nex
     //vaya al siguiente middleware
     next()
 }
+
+//validar el gasto por id
+
+export const validateExpenseId=async (req: Request, res: Response, next: NextFunction) =>{
+
+    await param('expenseId').isInt().custom(value=>value>0)
+    .withMessage('ID no valido')
+    .run(req)
+
+    //manda los errores
+    let errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() })
+    }
+    next()
+}
