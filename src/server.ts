@@ -2,8 +2,8 @@ import colors from 'colors'
 import express from 'express'
 import morgan from 'morgan'
 import { db } from './config/db'
+import authRouter from './routes/authRouter'
 import budgetRouter from './routes/budgetRouter'
-
 //conexion db
 async function connectDB(){
     try {
@@ -28,6 +28,8 @@ app.use(express.json())
 
 //usamos el Router en nuestra aplicacion
 app.use('/api/budgets',budgetRouter)
+//ruta del auth
+app.use('/api/auth',authRouter)
 
 
 
