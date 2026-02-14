@@ -28,7 +28,7 @@ class User extends Model{
 
     
     @Column({
-        type:DataType.STRING(50)
+        type:DataType.STRING(6)
     })
     declare token:string
 
@@ -37,7 +37,7 @@ class User extends Model{
     @Column({
         type:DataType.BOOLEAN
     })
-    declare confirmed:string
+    declare confirmed:boolean
 
     @HasMany(()=>Budget,{
        onUpdate:'CASCADE',

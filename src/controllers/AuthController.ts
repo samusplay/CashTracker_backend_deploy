@@ -42,4 +42,26 @@ export class AuthController {
 
     }
 
+    static confirmAcccount=async(req:Request,res:Response)=>{
+        //extraemos de la solictud
+        const {token}=req.body
+
+        const user=await User.findOne({
+            where:{token}
+        })
+        if(!user){
+            const error=new Error('Token no valido')
+            return res.status(401).json({error:error.message})
+        }
+        //si el usuario confirma su cuenta solo una vez
+        user.confirmed=true
+        user.token=null
+
+        //guardamos
+        await user.save()
+        
+        res.json("Cuenta confirmada correctamente")
+
+    }
+
 }
