@@ -99,4 +99,45 @@ export class AuthController {
 
     }
 
+    static forgotPassword = async (req: Request, res: Response) =>{
+         const {email}=req.body
+        //revisar que el codigo exista
+        const user=await User.findOne({
+            where:{
+                email
+            }
+        })
+        if(!user){
+            const error=new Error('Usuario no encontrado')
+            return res.status(404).json({error:error.message})
+        }
+        //generar token
+        user.token=generateToken()
+        //almacenar en la base de datos
+        await user.save()
+        //envaimos el email
+        await AuthEmail.sendPasswordResetToken({
+            name:user.name,
+            email:user.email,
+            token:user.token
+        })
+        res.json('Revisa tu email para instrucciones')
+
+    }
+
+    static validateToken = async (req: Request, res: Response) =>{
+        //extraemos token
+        const {token}=req.body
+
+       const tokenExists=await User.findOne({where:{token}})
+       //si no existe enviamos error
+       if(!tokenExists){
+        const error=new Error('Token no valido')
+        //agregamos estado http
+        return res.status(404).json({error:error.message})
+
+       }
+
+    }
+
 }

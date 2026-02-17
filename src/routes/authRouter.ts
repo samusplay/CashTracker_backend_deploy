@@ -22,7 +22,6 @@ router.post('/create-account',
 
 //router para enviar el token de seguridad
 router.post('/confirm-account',
-    limiter,
     body('token')
         .notEmpty()
         .isLength({ min: 6, max: 6 })
@@ -38,4 +37,19 @@ router.post('/login',
     handleInputErrors,
     AuthController.login)
 
+router.post('/forgot-password',
+    body('email')
+        .isEmail().withMessage('Email no validado'),
+        handleInputErrors,
+        AuthController.forgotPassword
+)
+
+router.post('/validate-token',
+     body('token')
+        .notEmpty()
+        .isLength({ min: 6, max: 6 })
+        .withMessage('Token no valido'),
+        handleInputErrors,
+        AuthController.validateToken
+)
 export default router
