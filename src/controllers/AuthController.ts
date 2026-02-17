@@ -1,8 +1,10 @@
 import { type Request, type Response } from "express"
 import { AuthEmail } from "../emails/AuthEmail"
 import User from "../models/User"
-import { hashPassword } from "../utils/auth"
+import { checkPaswword, hashPassword } from "../utils/auth"
 import { generateToken } from "../utils/token"
+import { hash } from "bcrypt"
+import { generateJWT } from "../utils/jwt"
 
 export class AuthController {
     //metodo del controlador estatico
@@ -61,6 +63,39 @@ export class AuthController {
         await user.save()
         
         res.json("Cuenta confirmada correctamente")
+
+    }
+    static login = async (req: Request, res: Response) =>{
+
+        const {email,password}=req.body
+        //revisar que el codigo exista
+        const user=await User.findOne({
+            where:{
+                email
+            }
+        })
+        if(!user){
+            const error=new Error('Usuario no encontrado')
+            return res.status(404).json({error:error.message})
+        }
+        //si el usuario ya confirmo su cuenta
+        if(!user.confirmed){
+             const error=new Error('La cuenta no ha sido confirmada')
+            return res.status(403).json({error:error.message})
+
+        }
+        //revisar la contraseña
+        const isPasswordCorrect= await checkPaswword(password,user.password)
+         if(!isPasswordCorrect){
+             const error=new Error('Password Incorrecto')
+            return res.status(401).json({error:error.message})
+
+        }
+        //pasarl el id para leerlo en el jwt
+        const token=generateJWT(user.id)
+
+        //entregamos respuesta token
+        res.json(token)
 
     }
 

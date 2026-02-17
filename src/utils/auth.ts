@@ -9,3 +9,9 @@ export const hashPassword=async(password:string)=>{
     return await bcrypt.hash(password,salt)
 }
 
+//comparar password
+export const checkPaswword=async(password:string,hash:string)=>{
+    //devuelve true o false
+    return await bcrypt.compare(password,hash)
+
+}
