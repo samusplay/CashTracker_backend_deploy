@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { body } from 'express-validator'
 import { AuthController } from '../controllers/AuthController'
 import { handleInputErrors } from '../middleware/validation'
+import { limiter } from '../config/limiter'
 
 //declaramos router
 const router=Router()
@@ -20,6 +21,7 @@ AuthController.createAccount)
 
 //router para enviar el token de seguridad
 router.post('/confirm-account',
+    limiter,
     body('token')
     .notEmpty()
     .isLength({min:6, max:6})
