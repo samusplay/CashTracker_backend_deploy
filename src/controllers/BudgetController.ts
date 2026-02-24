@@ -14,6 +14,9 @@ export class BudgetController {
                     ['createdAt', 'DESC']
                 ],
                 //filtrar por por el usuario autenticado
+                where:{
+                    userId:req.user.id
+                }
 
 
             })
@@ -27,6 +30,8 @@ export class BudgetController {
         try {
             //llama al modelo de la base de datos
             const budget = new Budget(req.body)
+            //para vincularlo a un usuario
+            budget.userId=req.user.id
 
             await budget.save()
             res.status(201).json('Prespuesto Creado Correctamente')
