@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { body, param } from 'express-validator'
 import { limiter } from '../config/limiter'
 import { AuthController } from '../controllers/AuthController'
+import { authenticate } from '../middleware/auth'
 import { handleInputErrors } from '../middleware/validation'
 
 //declaramos router
@@ -60,8 +61,33 @@ router.post('/reset-password/:token',
     body('password')
         .isLength({ min: 8 })
         .withMessage('El password es muy corto, minimo 8 caracteres'),
-        handleInputErrors,
-        AuthController.resetPasswordWithToken
+    handleInputErrors,
+    AuthController.resetPasswordWithToken
+)
+router.get('/user',
+    authenticate,
+    AuthController.user
+)
+router.post('/update-password',
+    authenticate,
+    //validar current password
+    body('current_password')
+        .notEmpty()
+        .withMessage('El password actual no puede ir vacio'),
+    body('password')
+        .isLength({ min: 8 })
+        .withMessage('El password  nuevo es muy corto, minimo 8 caracteres'),
+    handleInputErrors,
+    AuthController.updateCurrentUserPassword
 )
 
+router.post('/check-password',
+    authenticate,
+    //validar current password
+    body('password')
+        .notEmpty()
+        .withMessage('El password actual no puede ir vacio'),
+    handleInputErrors,
+    AuthController.checkPassword
+)
 export default router
