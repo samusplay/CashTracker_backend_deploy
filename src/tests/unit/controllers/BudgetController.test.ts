@@ -1,9 +1,9 @@
 //slatar router 
 import { createRequest, createResponse } from "node-mocks-http";
-import { BudgetController } from "../../controllers/BudgetController";
-import Budget from "../../models/Budget";
-import Expense from "../../models/Expense";
-import { budgets } from "../mocks/budgets";
+import { BudgetController } from "../../../controllers/BudgetController";
+import Budget from "../../../models/Budget";
+import Expense from "../../../models/Expense";
+import { budgets } from "../../mocks/budgets";
 
 jest.mock('../../models/Budget', () => ({
     //las funciones a  simular
