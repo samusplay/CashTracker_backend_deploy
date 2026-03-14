@@ -7,7 +7,7 @@ export class ExpensesController {
     static create = async (req: Request, res: Response) => {
         try {
             //recuperar el id atravez de la instancia
-            const expense = new Expense(req.body)
+            const expense = await Expense.create(req.body)
             expense.budgetId = req.budget.id
             //guardar en la base de datos
             await expense.save()
