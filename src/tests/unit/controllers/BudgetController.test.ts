@@ -5,7 +5,7 @@ import Budget from "../../../models/Budget";
 import Expense from "../../../models/Expense";
 import { budgets } from "../../mocks/budgets";
 
-jest.mock('../../models/Budget', () => ({
+jest.mock('../../../models/Budget', () => ({
     //las funciones a  simular
     findAll: jest.fn(),
     create: jest.fn(),
