@@ -22,7 +22,7 @@ export class AuthController {
         }
         try {
             //guardamos nuevo usuario
-            const user = new User(req.body)
+            const user = await User.create(req.body)
             //agregamos la encriptacion con salt
             user.password = await hashPassword(password)
             //llamamos la funcion para generar el token
@@ -35,7 +35,7 @@ export class AuthController {
                 token: user.token
             })
             //respuesta
-            res.json('Cuenta Creada correctamente')
+            res.status(201).json('Cuenta Creada correctamente')
         } catch (error) {
             //console.log(error)
             res.status(500).json({ error: 'Hubo un error' })
