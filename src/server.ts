@@ -1,19 +1,18 @@
-import colors from 'colors'
 import express from 'express'
 import morgan from 'morgan'
 import { db } from './config/db'
 import authRouter from './routes/authRouter'
 import budgetRouter from './routes/budgetRouter'
 //conexion db
-async function connectDB(){
+export async function connectDB(){
     try {
         await db.authenticate()
         //crea las tablas en automatico
         db.sync()
-        console.log(colors.blue.bold('Conexion Exitosa a la BD'))
+        //console.log(colors.blue.bold('Conexion Exitosa a la BD'))
     } catch (error) {
         //console.log(error)
-        console.log(colors.red.bold('Fallo la conexion a la BD'))
+        //console.log(colors.red.bold('Fallo la conexion a la BD'))
     }
 
 }
@@ -30,6 +29,10 @@ app.use(express.json())
 app.use('/api/budgets',budgetRouter)
 //ruta del auth
 app.use('/api/auth',authRouter)
+
+app.get('/',(req,res)=>{
+    res.send('Todo bien')
+})
 
 
 
