@@ -12,7 +12,9 @@
     "build": "tsc",
     "start": "node ./dist/index.js",
     "test": "jest",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "pretest": "ts-node ./src/data/index.ts --clear"
+    
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

@@ -16,7 +16,7 @@ router.post('/create-account',
     body('password')
         .isLength({ min: 8 }).withMessage('El password es muy corto, minimo 8 caracteres'),
     body('email')
-        .isEmail().withMessage('E-mail no valido '),
+        .isEmail().withMessage('E-mail no valido'),
     //validamos errores
     handleInputErrors,
     AuthController.createAccount)
