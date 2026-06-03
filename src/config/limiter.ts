@@ -3,6 +3,7 @@ import { rateLimit } from 'express-rate-limit'
 export const limiter=rateLimit({
     //limita request
     windowMs:60*1000,
+    //limite de pruebas para cambiar ambientes
     limit:process.env.NODE_ENV==='production'?5:100,
     message:{"error":"Has alcanzado el limite de peticiones"}
 })
