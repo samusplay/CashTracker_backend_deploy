@@ -30,9 +30,7 @@ app.use('/api/budgets',budgetRouter)
 //ruta del auth
 app.use('/api/auth',authRouter)
 
-app.get('/',(req,res)=>{
-    res.send('Todo bien')
-})
+
 
 
 
