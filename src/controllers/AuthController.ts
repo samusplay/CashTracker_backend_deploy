@@ -26,7 +26,15 @@ export class AuthController {
             //agregamos la encriptacion con salt
             user.password = await hashPassword(password)
             //llamamos la funcion para generar el token
-            user.token = generateToken()
+            const token = generateToken()
+             //asignamos
+            user.token=token;
+
+            //global dist se genere ese ambiente que no sea produccion
+            if(process.env.NODE_ENV !=='production'){
+                globalThis.cashTrackrConfirmationToken=token
+            }
+           
             await user.save()
             await AuthEmail.sendConfirmationEmail({
                 //en base a los types

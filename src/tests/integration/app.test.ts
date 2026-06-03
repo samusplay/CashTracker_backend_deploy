@@ -140,4 +140,38 @@ describe('authentication- Account  confirmation with token',()=>{
         expect(response.body.errors).toHaveLength(1)
         expect(response.body.errors[0].msg).toBe('Token no valido')
     })
+
+    it('should display error if token doenst exists', async()=>{
+        //simulamos el comportamiento
+        const response= await request(server)
+        .post('/api/auth/confirm-account')
+        .send({
+            //puede ser que exista
+            token:"123456"
+        })
+        //cubrimos ecenarios
+        expect(response.status).toBe(401)
+        //errors es exprres validator
+        expect(response.body).toHaveProperty('error')
+        
+        expect(response.body.error).toBe('Token no valido')
+        expect(response.status).not.toBe(200)
+    })
+
+    it('should confirm account with a valid token', async()=>{
+        //extraemos antes de  enviar al request
+        const token=globalThis.cashTrackrConfirmationToken
+        //simulamos el comportamiento hacemos dinamico con el Global this
+        const response= await request(server)
+        .post('/api/auth/confirm-account')
+        .send({token})
+
+        //lo qe esperamos de la prueba
+        expect(response.status).toBe(200)
+        expect(response.body).toBe("Cuenta confirmada correctamente")
+        expect(response.status).not.toBe(401)
+       
+    })
+
+    
 })
