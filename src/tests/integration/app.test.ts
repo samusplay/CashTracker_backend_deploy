@@ -175,3 +175,30 @@ describe('authentication- Account  confirmation with token',()=>{
 
     
 })
+
+//pruebas Login
+describe('Authenticactio -login',()=>{
+
+    //pruebas de integracion siempre son asincronicas
+    it('should display validation errors when the form is empty',async()=>{
+        //simulamos el envio de datos
+        const response=await request(server)
+        .post('/api/auth/login')
+        .send({})
+
+        //simulamos el auth controller con spyon
+        const loginMock=jest.spyOn(AuthController,'login')
+
+        //lo que esperamos que pase en la prueba
+        expect(response.status).toBe(400)
+        expect(response.body).toHaveProperty('errors')
+        expect(response.body.errors).toHaveLength(2)
+        expect(response.body.errors).not.toHaveLength(1)
+
+        expect(loginMock).not.toHaveBeenCalled()
+
+
+
+    })
+
+})
