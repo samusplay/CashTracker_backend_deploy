@@ -196,9 +196,28 @@ describe('Authenticactio -login',()=>{
         expect(response.body.errors).not.toHaveLength(1)
 
         expect(loginMock).not.toHaveBeenCalled()
-
-
-
     })
 
+    it('should return 400 bad request when the email is invalid',async()=>{
+        //simulamos el envio de datos
+        const response=await request(server)
+        .post('/api/auth/login')
+        .send({
+            "password":"password",
+            "email":"not_valid"
+        })
+
+        //simulamos el auth controller con spyon
+        const loginMock=jest.spyOn(AuthController,'login')
+
+        //lo que esperamos que pase en la prueba
+        expect(response.status).toBe(400)
+        expect(response.body).toHaveProperty('errors')
+        expect(response.body.errors).toHaveLength(1)
+        expect(response.body.errors).not.toHaveLength(2)
+
+        //validando que el email no es valido
+        expect(response.body.errors[0].msg).toBe('Email no valido')
+        expect(loginMock).not.toHaveBeenCalled()
+    })
 })

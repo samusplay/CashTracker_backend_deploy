@@ -32,7 +32,7 @@ router.post('/confirm-account',
 
 router.post('/login',
     body('email')
-        .isEmail().withMessage('Email no validado'),
+        .isEmail().withMessage('Email no valido'),
     body('password')
         .notEmpty().withMessage('El password es obligatorio'),
     handleInputErrors,
