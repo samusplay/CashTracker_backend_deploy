@@ -15,8 +15,8 @@ export const validateBudgetId = async (req: Request, res: Response, next: NextFu
 
     await param("budgetId")
         .isInt()
-        .withMessage("Id no valido")
-        .custom((value) => value > 0)
+        .withMessage("Id no valido").bail()
+        .custom((value) => value > 0).bail()
         .withMessage("Id no valido")
         .run(req)
 

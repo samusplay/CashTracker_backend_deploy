@@ -184,7 +184,7 @@ describe('authentication- Account  confirmation with token', () => {
 })
 
 //pruebas Login
-describe('Authenticactio -login', () => {
+describe('Authenticaction -login', () => {
 
     //un before each para que  se llame una vez
     beforeEach(() => {
@@ -361,7 +361,7 @@ describe('Authenticactio -login', () => {
 
     })
 
-    it('should return a 401  error if the password is incorrect', async () => {
+    it('should return a jwt', async () => {
 
         //simularemos que este exista el user pero no este confirmado
         const findOne = (jest.spyOn(User, 'findOne') as jest.Mock)
@@ -395,7 +395,7 @@ describe('Authenticactio -login', () => {
 
         expect(chekcPassword).toHaveBeenCalled()
         expect(chekcPassword).toHaveBeenCalledTimes(1)
-        expect(chekcPassword).toHaveBeenCalledWith('correctPassword','hashedPassword')
+        expect(chekcPassword).toHaveBeenCalledWith('correctPassword', 'hashedPassword')
 
         expect(generateJwt).toHaveBeenCalled()
         expect(generateJwt).toHaveBeenCalledTimes(1)
@@ -408,4 +408,150 @@ describe('Authenticactio -login', () => {
     })
 
 
+})
+//disponible globalmente
+let jwt: string
+
+async function autneticactionUser(){
+    
+    const response = await request(server)
+            .post('/api/auth/login')
+            .send({
+                password: "password",
+                email: "budget_test@test.com"
+            })
+
+        jwt = response.body
+        expect(response.status).toBe(200)
+}
+
+describe('GET /api/budgets', () => {
+    beforeAll(async () => {
+        await autneticactionUser()
+        // 1. Limpiar mocks para que el JWT sea real
+        jest.restoreAllMocks()
+
+        // 2. Mock solo del email
+        jest.spyOn(AuthEmail, 'sendConfirmationEmail').mockResolvedValue()
+
+        // 3. Crear cuenta con email único
+        await request(server)
+            .post('/api/auth/create-account')
+            .send({
+                name: "test budgets",
+                password: "password",
+                email: "budget_test@test.com"
+            })
+
+        // 4. Confirmar con el nuevo token generado
+        const token = globalThis.cashTrackrConfirmationToken
+        await request(server)
+            .post('/api/auth/confirm-account')
+            .send({ token })
+
+        // 5. Login → ahora sí retorna JWT real
+        const response = await request(server)
+            .post('/api/auth/login')
+            .send({
+                password: "password",
+                email: "budget_test@test.com"
+            })
+
+        jwt = response.body
+        expect(response.status).toBe(200)
+    })
+
+    it('should reject unauthenticated access to budgets without a  jwt', async () => {
+        const response = await request(server).get('/api/budgets')
+
+        expect(response.status).toBe(401)
+        expect(response.body.error).toBe('No Autorizado')
+    })
+
+    it('should reject unauthenticated access to budgets without a valid jwt', async () => {
+        const response = await request(server)
+            .get('/api/budgets')
+            .auth('not_valid', { type: 'bearer' })
+
+
+        expect(response.status).toBe(500)
+        expect(response.body.error).toBe('Token no valido')
+    })
+
+    it('should allow authenticated access to budgets with a valid a jwt', async () => {
+        const response = await request(server)
+            .get('/api/budgets')
+            //especificamos una autenticacion como en postman 
+            .auth(jwt, { type: 'bearer' })
+
+        expect(response.body).toHaveLength(0)
+        expect(response.status).not.toBe(401)
+        expect(response.body.error).not.toBe('No Autorizado')
+    })
+
+
+
+
+
+})
+
+
+describe('POST /api/budgets', () => {
+   
+
+    beforeAll(async () => {
+       await autneticactionUser()
+    })
+
+    
+    it('should reject unauthenticated post request budgets without a  jwt', async () => {
+        const response = await request(server).post('/api/budgets')
+
+        expect(response.status).toBe(401)
+        expect(response.body.error).toBe('No Autorizado')
+    })
+
+    it('should display validation when the form is submitted with invalid data', async () => {
+        const response = await request(server)
+        .post('/api/budgets')
+        .auth(jwt,{type:'bearer'})
+        .send({})
+
+        expect(response.status).toBe(400)
+        expect(response.body.errors).toHaveLength(4)
+    })
+
+
+})
+
+describe('GET /api/budgets/:id',()=>{
+    
+    beforeAll(async () => {
+       await autneticactionUser()
+    })
+
+    
+    it('should reject unauthenticated get request budget id without a  jwt', async () => {
+        const response = await request(server).get('/api/budgets/1')
+
+        expect(response.status).toBe(401)
+        expect(response.body.error).toBe('No Autorizado')
+    })
+
+     it('should return 400 bad request when id is not valid', async () => {
+        const response = await request(server)
+        .get('/api/budgets/not_valid')
+        //necesitamos estar auntenciados para 
+        .auth(jwt,{type:'bearer'})
+
+        expect(response.status).toBe(400)
+        //este definido
+        expect(response.body.errors).toBeDefined()
+        expect(response.body.errors).toBeTruthy()
+        expect(response.body.errors).toHaveLength(1)
+        expect(response.body.errors[0].msg).toBe('Id no valido')
+        expect(response.status).not.toBe(401)
+        expect(response.body.error).not.toBe('No Autorizado')
+    })
+    
 })
